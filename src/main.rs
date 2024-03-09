@@ -22,30 +22,12 @@ pub async fn post_message(
     Query(q): Query<Filter>,
     body: String
 ) -> (StatusCode, Json<Vec<Line>>) {
-    let lines = tokenizer::split_lines(body);
-    let mut final_lines: Vec<Line> = vec![];
-    return if let Some(filter) = q.filter {
-        for mut line in lines {
-            if (filter.starts_with(&line.name)) {
-                let mut v = vec![];
-                for field in line.sub {
-                    if field.name.eq(&filter) {
-                        v.push(field);
-                    }
-                }
-                line.sub = v;
-                final_lines.push(line);
-            }
-        }
-        (StatusCode::default(), Json(final_lines))
-    } else {
-        (StatusCode::default(), Json(lines))
-    }
-
-
+    let lines = tokenizer::split_lines(body, q);
+    (StatusCode::default(), Json(lines))
 }
 
 #[derive(Serialize, Deserialize)]
 struct Filter {
-    pub filter: Option<String>
+    pub segment_filter: Option<String>,
+    pub field_filter: Option<String>
 }
