@@ -5,7 +5,7 @@ pub fn split_lines(mut lines: String, mut filter: Filter) -> Vec<Line> {
     let mut segment_filters: Vec<Box<dyn Fn(String) -> bool>> = vec![];
     if let Some(filter) = &filter.segment_filter {
         for f in filter.split(",") {
-            segment_filters.push(Box::new(|x: String| x.starts_with(&f.to_string())));
+            segment_filters.push(Box::new(|x: String| x.eq(&f.to_string())));
         }
     } else {
         segment_filters.push(Box::new(|x: String| true));
@@ -58,7 +58,7 @@ pub fn split_line(mut line: &String, filter: Option<String>) -> Vec<Field> {
     let mut field_filters: Vec<Box<dyn Fn(String) -> bool>> = vec![];
     if let Some(filter) = &filter {
         for f in filter.split(",") {
-            field_filters.push(Box::new(|x: String| x.starts_with(&f.to_string())));
+            field_filters.push(Box::new(|x: String| x.eq(&f.to_string())));
         }
     } else {
         field_filters.push(Box::new(|x: String| true));

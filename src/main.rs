@@ -9,11 +9,15 @@ use axum::{Json, Router};
 use clap::Parser;
 use serde::{Deserialize, Serialize};
 use std::net::{IpAddr, SocketAddr};
+use tower_http::services::ServeDir;
 
 #[tokio::main]
 async fn main() {
     let config = ServerConfig::parse();
-    let app = Router::new().route("/message", post(post_message));
+    let serve_dir_from_dist = ServeDir::new("frontend/dist/");
+    let app = Router::new()
+        .nest_service("/", serve_dir_from_dist)
+        .route("/message", post(post_message));
     let addr = SocketAddr::from((config.host, config.port));
     let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
     axum::serve(listener, app).await.unwrap();
