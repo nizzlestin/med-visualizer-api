@@ -1,7 +1,7 @@
 use crate::Filter;
 use serde::{Deserialize, Serialize};
 
-pub fn split_lines(mut lines: String, mut filter: Filter) -> Vec<Line> {
+pub fn split_lines(mut lines: String, mut filter: Filter) -> Vec<Vec<Field>> {
     let mut segment_filters: Vec<Box<dyn Fn(String) -> bool>> = vec![];
     if let Some(filter) = &filter.segment_filter {
         for f in filter.split(",") {
@@ -13,22 +13,12 @@ pub fn split_lines(mut lines: String, mut filter: Filter) -> Vec<Line> {
 
     let field_filter = filter.field_filter.clone();
     let mut lines = lines
-        .split("\n")
-        .filter(|x| x.len() > 2)
-        .filter(|x| {
-            segment_filters
-                .iter()
-                .any(|filter_function| filter_function(x.to_string()))
-        })
-        .map(|s| Line {
-            name: String::from(&s[0..3]),
-            sub: split_line(&String::from(&s[0..]), field_filter.clone()),
-        })
-        .collect();
+        .split("\n").filter_map(|s| split_line(&String::from(&s[0..]), field_filter.clone())).collect();
+
     return lines;
 }
 
-pub fn split_line(mut line: &String, filter: Option<String>) -> Vec<Field> {
+pub fn split_line(mut line: &String, filter: Option<String>) -> Option<Vec<Field>> {
     let mut fields: Vec<Field> = vec![];
     if let Some(name) = line.get(..3) {
         for (field_idx, field) in line.split("|").enumerate() {
@@ -71,7 +61,11 @@ pub fn split_line(mut line: &String, filter: Option<String>) -> Vec<Field> {
             final_fields.push(field);
         }
     }
-    return final_fields;
+    if(final_fields.len() == 0) {
+        None
+    } else {
+        Some(final_fields)
+    }
 }
 
 #[derive(Serialize, Deserialize)]

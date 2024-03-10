@@ -1,7 +1,7 @@
 mod exporter;
 mod tokenizer;
 
-use crate::tokenizer::Line;
+use crate::tokenizer::{Field, Line};
 use axum::extract::Query;
 use axum::http::StatusCode;
 use axum::routing::post;
@@ -23,7 +23,7 @@ async fn main() {
     axum::serve(listener, app).await.unwrap();
 }
 
-pub async fn post_message(Query(q): Query<Filter>, body: String) -> (StatusCode, Json<Vec<Line>>) {
+pub async fn post_message(Query(q): Query<Filter>, body: String) -> (StatusCode, Json<Vec<Vec<Field>>>) {
     let lines = tokenizer::split_lines(body, q);
     (StatusCode::default(), Json(lines))
 }
