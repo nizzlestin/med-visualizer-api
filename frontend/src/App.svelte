@@ -5,7 +5,7 @@ let inputValues = {};
 
 function resetInputValues() {
   inputValues = {};
-  document.getElementById('segment_filter').value = '';
+  // document.getElementById('segment_filter').value = '';
   document.getElementById('field_filter').value = '';
   query()
 }
@@ -35,19 +35,23 @@ function query() {
 
       return csvContent;
     }
-    let x = convertToCSV(segments);
-    document.getElementById('results').innerText = x;
+    let csvContent = convertToCSV(segments);
+    document.getElementById('results').innerText = csvContent;
   })
 }
 </script>
 
 <main>
-  <FilterField label="Segment Filter" id="segment_filter" onInput="{handleInputChange}"></FilterField>
-  <FilterField label="Field Filter" id="field_filter" onInput="{handleInputChange}"></FilterField>
-  <button type="button" on:click={resetInputValues}>Reset</button>
-  <hr>
-  <textarea id="request_body"></textarea>
-  <div id="results"></div>
+  <div class="container">
+    <form class="item">
+<!--      <FilterField label="Segment Filter" id="segment_filter" onInput="{handleInputChange}"></FilterField>-->
+      <FilterField label="Field Filter" id="field_filter" onInput="{handleInputChange}"></FilterField>
+      <label for="request_body">Hl7v2 Message</label>
+      <textarea id="request_body"></textarea>
+      <button type="button" on:click={resetInputValues}>Reset</button>
+    </form>
+    <div class="item" id="results"></div>
+  </div>
 </main>
 
 <style>
